@@ -33,7 +33,7 @@ async def change_user_password(user_id: int, new_password: str) -> AuthUserModel
     async with async_session() as session:
         query = await session.get(AuthUserModel, user_id)
         if query:
-            query.password = new_password
+            query.password = hash_password(new_password)
             await session.commit()
             await session.refresh(query)
             return query

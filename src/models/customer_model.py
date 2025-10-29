@@ -1,10 +1,7 @@
 from datetime import datetime
 from sqlalchemy import String, DateTime, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
-
-class Base(DeclarativeBase):
-    pass
+from sqlalchemy.orm import Mapped, mapped_column
+from src.models.base_model import Base
 
 
 class CustomerModel(Base):

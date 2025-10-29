@@ -12,6 +12,11 @@ class AuthUserBaseSchema(BaseModel):
         return v
 
 
+class AuthUserLoginSchema(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class AuthUserCreateSchema(AuthUserBaseSchema):
     password: str
     role: str | None = "user"
@@ -28,4 +33,4 @@ class AuthUserResponseSchema(AuthUserBaseSchema):
     updated_at: str | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

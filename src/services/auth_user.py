@@ -5,11 +5,11 @@ from src.repositories.auth_user import (
     delete_user,
     login_user,
 )
-from src.utils.passwords import verify_password, hash_password
+from src.utils.passwords import verify_password, hash_password, needs_rehash
 from src.schemas.auth_user import AuthUserCreateSchema, AuthUserBaseSchema
-from datetime import timedelta
 from src.utils.jwt_handler import create_access_token
 from fastapi import HTTPException, status
+from datetime import timedelta
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 10
 
@@ -18,6 +18,11 @@ async def login(email: str, password: str):
     user = await get_user_by_email(email)
     if not user or not verify_password(password, user.password):
         return None
+
+    # Si el hash es viejo → actualizar
+    if needs_rehash(user.password):
+        new_hash = hash_password(password)
+        await change_user_password(user.id, new_hash)
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -42,8 +47,9 @@ async def register_user(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
         )
-    hashed_password = hash_password(password)
-    user_data = AuthUserCreateSchema(email=email, password=hashed_password, role=role)
+
+    # 👇 no lo hashees acá, pasalo plano
+    user_data = AuthUserCreateSchema(email=email, password=password, role=role)
     new_user = await create_user(user_data)
     return AuthUserBaseSchema.from_orm(new_user)
 
