@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
 from src.services.auth_user import (
     register_user,
     login as login_user,
@@ -23,5 +23,8 @@ async def register(user: AuthUserCreateSchema):
 async def login(user: AuthUserLoginSchema):
     token = await login_user(email=user.email, password=user.password)
     if not token:
-        return {"error": "Invalid credentials"}, 401
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+        )
     return token

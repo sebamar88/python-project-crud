@@ -51,17 +51,17 @@ async def register_user(
     # 👇 no lo hashees acá, pasalo plano
     user_data = AuthUserCreateSchema(email=email, password=password, role=role)
     new_user = await create_user(user_data)
-    return AuthUserBaseSchema.from_orm(new_user)
+    return AuthUserBaseSchema.model_validate(new_user)
 
 
 async def update_user_role(user_id: int, new_role: str) -> AuthUserBaseSchema:
     updated_user = await change_user_role(user_id, new_role)
-    return AuthUserBaseSchema.from_orm(updated_user)
+    return AuthUserBaseSchema.model_validate(updated_user)
 
 
 async def update_user_password(user_id: int, new_password: str) -> AuthUserBaseSchema:
     updated_user = await change_user_password(user_id, new_password)
-    return AuthUserBaseSchema.from_orm(updated_user)
+    return AuthUserBaseSchema.model_validate(updated_user)
 
 
 async def remove_user(user_id: int) -> bool:

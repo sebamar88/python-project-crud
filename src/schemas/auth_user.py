@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, ConfigDict
 
 
 class AuthUserBaseSchema(BaseModel):
@@ -10,6 +10,8 @@ class AuthUserBaseSchema(BaseModel):
         if v not in ["user", "admin"]:
             raise ValueError("Invalid role")
         return v
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AuthUserLoginSchema(BaseModel):
@@ -31,6 +33,3 @@ class AuthUserResponseSchema(AuthUserBaseSchema):
     id: int
     created_at: str
     updated_at: str | None = None
-
-    class Config:
-        from_attributes = True
